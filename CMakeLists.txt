@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 project(xml_json_converter CXX)
 
 include(CheckIncludeFileCXX)
+include(FetchContent)   # <---- add this
 
 # --- Detect available standard features ---
 check_include_file_cxx(any HAS_ANY)
@@ -25,7 +26,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(${PROJECT_NAME}
     main.cc
     controllers/ToJsonController.cc
-    # controllers/ToXmlController.cc
+    controllers/ToXmlController.cc
 )
 
 # --- Drogon dependency ---
@@ -42,6 +43,14 @@ if (NOT JSONCPP_INCLUDE_DIRS OR NOT JSONCPP_LIBRARIES)
     message(FATAL_ERROR "JsonCpp not found. Install libjsoncpp-dev")
 endif ()
 
+# --- Jsoncons (fetch + header only) ---
+FetchContent_Declare(
+  jsoncons
+  GIT_REPOSITORY https://github.com/danielaparker/jsoncons.git
+  GIT_TAG master   # or pick a stable tag like 0.171.0
+)
+FetchContent_MakeAvailable(jsoncons)
+
 # --- Link libraries ---
 target_link_libraries(${PROJECT_NAME}
     PRIVATE
@@ -56,6 +65,7 @@ target_include_directories(${PROJECT_NAME}
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/models
     ${JSONCPP_INCLUDE_DIRS}
+    ${jsoncons_SOURCE_DIR}/include  
 )
 
 # --- Copy config.json into build dir ---
