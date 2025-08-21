@@ -1,6 +1,6 @@
 #include <drogon/HttpController.h>
 #include <pugixml.hpp>
-#include <json/json.h>   // Drogon uses this internally
+#include <json/json.h>  
 
 using namespace drogon;
 
@@ -13,7 +13,7 @@ public:
     void xmlToJson(const HttpRequestPtr &req,
                    std::function<void(const HttpResponsePtr &)> &&callback)
     {
-        std::string xmlStr(req->getBody());  // FIXED
+        std::string xmlStr(req->getBody()); 
 
         pugi::xml_document doc;
         if (!doc.load_string(xmlStr.c_str()))
@@ -41,7 +41,6 @@ public:
         auto lname = doc.select_node("/Student/lname").node().child_value();
         auto age   = doc.select_node("/Student/Age").node().child_value();
         auto dob   = doc.select_node("/Student/DOB").node().child_value();
-        // auto profession = doc.select_node("/Student/Profession").node().child_value();
         auto title = doc.select_node("/Student/Profession/title").node().child_value();
         auto experience = doc.select_node("/Student/Profession/experience").node().child_value();
 
@@ -51,10 +50,9 @@ public:
         out["Student"]["fullname"] = std::string(fname) + " " + lname;
         out["Student"]["age_dob"]["age"] = age;
         out["Student"]["age_dob"]["dob"] = dob;
-        // out["Student"]["Profession"] = profession;
         out["Student"]["Profession"]["title"] = title;
         out["Student"]["Profession"]["experience"] = experience;
-        
+
         auto resp = HttpResponse::newHttpJsonResponse(out);
         callback(resp);
     }

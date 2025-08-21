@@ -70,7 +70,3 @@ elseif (CMAKE_CXX_STANDARD LESS 20)
 else ()
     message(STATUS "Using C++20")
 endif ()
-
-# --- Views ---
-drogon_create_views(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/views
-                    ${CMAKE_CURRENT_BINARY_DIR})

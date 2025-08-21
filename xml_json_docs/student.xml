@@ -1,19 +1,25 @@
 <Student id="1234">  
-    <fname> Raddames </fname>
-    <lname> Tonui </lname >
-    <Age> 25 </Age>
-    <DOB>21-Decemeber 19999</DOB>
+    <fname>Raddames</fname>
+    <lname>Tonui</lname>
+    <Age>25</Age>
+    <DOB>21-December-1999</DOB>
+    <Profession>
+        <title>Software Engineer</title>
+        <experience>3 years</experience>
+    </Profession>
 </Student>
 
-
-
 {
-    "Student" {
-        "id" : 12345
-        "fullname" : "Raddames Tonui"
-        "age_dob" {
-            "age" : 28,
-            "dob" : "21-12-1999"
-        }
+  "Student": {
+    "id": "1234",
+    "fullname": "Raddames Tonui",
+    "age_dob": {
+      "age": "25",
+      "dob": "21-December-1999"
+    },
+    "Profession": {
+      "title": "Software Engineer",
+      "experience": "3 years"
     }
+  }
 }
