@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?> <!-- 1: XML declaration: version + encoding -->
+
+<!-- 2: A root element is required in XML -->
+<library xmlns:bk="http://example.org/books" category="public"> <!-- 3: Root element with a namespace and an attribute -->
+
+    <bk:book id="b1" available="true"> <!-- 4: Namespaced element with attributes -->
+        <title lang="en">XML Fundamentals</title> <!-- 5: Element with attribute (language code) -->
+        <author>John Doe</author> <!-- 6: Simple element -->
+        <price currency="USD">29.99</price> <!-- 7: Element with numeric text + attribute -->
+    </bk:book>
+
+    <bk:book id="b2" available="false">
+        <title lang="fr">Chemin XPath</title> <!-- 8: Another element, showing multilingual text -->
+        <author>Jean Dupont</author>
+        <price currency="EUR">35.50</price>
+        <summary><![CDATA[XPath is powerful <and> can handle "weird" text]]></summary> <!-- 9: CDATA section (ignores special chars) -->
+    </bk:book>
+
+    <magazine> <!-- 10: Non-namespaced sibling element -->
+        <title>XML Monthly</title>
+        <issue num`ber="42"/> <!-- 11: Empty element (self-closing) -->
+    </magazine>
+
+    <!-- 12: Comments can appear anywhere outside markup -->
+    <note priority="high">
+        <to>Alice</to>
+        <from>Bob</from>
+        <message>Don’t forget XML must be well-formed!</message>
+    </note>
+
+</library> <!-- 13: Root closes at the end -->
+
+
+<!-- 
+Without namespaces, <title> would be ambiguous. With namespaces, bk:title and mag:title are clearly different. -->
+<library xmlns:bk="http://example.org/books" 
+         xmlns:mag="http://example.org/magazines">
+  <bk:book>
+    <bk:title>Clean Code</bk:title>
+  </bk:book>
+  <mag:magazine>
+    <mag:title>Science Weekly</mag:title>
+  </mag:magazine>
+</library>

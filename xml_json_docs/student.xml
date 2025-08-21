@@ -1,0 +1,19 @@
+<Student id="1234">  
+    <fname> Raddames </fname>
+    <lname> Tonui </lname >
+    <Age> 25 </Age>
+    <DOB>21-Decemeber 19999</DOB>
+</Student>
+
+
+
+{
+    "Student" {
+        "id" : 12345
+        "fullname" : "Raddames Tonui"
+        "age_dob" {
+            "age" : 28,
+            "dob" : "21-12-1999"
+        }
+    }
+}
