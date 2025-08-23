@@ -13,47 +13,64 @@ public:
     void xmlToJson(const HttpRequestPtr &req,
                    std::function<void(const HttpResponsePtr &)> &&callback)
     {
-        std::string xmlStr(req->getBody()); 
+        try
+        {
+            std::string xmlStr(req->getBody());
 
-        pugi::xml_document doc;
-        if (!doc.load_string(xmlStr.c_str()))
+            pugi::xml_document doc;
+            if (!doc.load_string(xmlStr.c_str()))
+            {
+                Json::Value err;
+                err["error"] = "Invalid XML format";
+                auto resp = HttpResponse::newHttpJsonResponse(err);
+                callback(resp);
+                return;
+            }
+
+            auto studentNode = doc.select_node("/Student");
+            if (!studentNode)
+            {
+                Json::Value err;
+                err["error"] = "No <Student> node found in XML";
+                auto resp = HttpResponse::newHttpJsonResponse(err);
+                callback(resp);
+                return;
+            }
+
+            // Extract fields safely
+            auto id          = doc.select_node("/Student/@id").attribute().value();
+            auto fname       = doc.select_node("/Student/fname").node().child_value();
+            auto lname       = doc.select_node("/Student/lname").node().child_value();
+            auto age         = doc.select_node("/Student/Age").node().child_value();
+            auto dob         = doc.select_node("/Student/DOB").node().child_value();
+            auto title       = doc.select_node("/Student/Profession/title").node().child_value();
+            auto experience  = doc.select_node("/Student/Profession/experience").node().child_value();
+
+            // Build JSON
+            Json::Value out;
+            out["Student"]["student_id"] = id;
+            out["Student"]["fullname"] = std::string(fname) + " " + lname;
+            out["Student"]["age_dob"]["age"] = age;
+            out["Student"]["age_dob"]["dob"] = dob;
+            out["Student"]["Profession"]["title"] = title;
+            out["Student"]["Profession"]["experience"] = experience;
+
+            auto resp = HttpResponse::newHttpJsonResponse(out);
+            callback(resp);
+        }
+        catch (const std::exception &ex)
         {
             Json::Value err;
-            err["error"] = "Invalid XML";
+            err["error"] = std::string("Exception: ") + ex.what();
             auto resp = HttpResponse::newHttpJsonResponse(err);
             callback(resp);
-            return;
         }
-
-        auto studentNode = doc.select_node("/Student");
-        if (!studentNode)
+        catch (...)
         {
             Json::Value err;
-            err["error"] = "No Student node found";
+            err["error"] = "Unknown error occurred during XML to JSON conversion";
             auto resp = HttpResponse::newHttpJsonResponse(err);
             callback(resp);
-            return;
         }
-
-        // auto id    = studentNode.node().attribute("id").value();
-        auto id = doc.select_node("/Student/@id").attribute().value();
-        auto fname = doc.select_node("/Student/fname").node().child_value();
-        auto lname = doc.select_node("/Student/lname").node().child_value();
-        auto age   = doc.select_node("/Student/Age").node().child_value();
-        auto dob   = doc.select_node("/Student/DOB").node().child_value();
-        auto title = doc.select_node("/Student/Profession/title").node().child_value();
-        auto experience = doc.select_node("/Student/Profession/experience").node().child_value();
-
-
-        Json::Value out;
-        out["Student"]["student_id"] = id;
-        out["Student"]["fullname"] = std::string(fname) + " " + lname;
-        out["Student"]["age_dob"]["age"] = age;
-        out["Student"]["age_dob"]["dob"] = dob;
-        out["Student"]["Profession"]["title"] = title;
-        out["Student"]["Profession"]["experience"] = experience;
-
-        auto resp = HttpResponse::newHttpJsonResponse(out);
-        callback(resp);
     }
 };

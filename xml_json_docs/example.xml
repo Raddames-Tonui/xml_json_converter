@@ -18,7 +18,7 @@
 
     <magazine> <!-- 10: Non-namespaced sibling element -->
         <title>XML Monthly</title>
-        <issue num`ber="42"/> <!-- 11: Empty element (self-closing) -->
+        <issue number="42"/> <!-- 11: Empty element (self-closing) -->
     </magazine>
 
     <!-- 12: Comments can appear anywhere outside markup -->
