@@ -1,0 +1,30 @@
+TARGET      := app.exe
+LIBNAME     := drogon_controllers
+SRC_DIR     := controllers
+INC_DIR     := include
+BUILD_DIR   := build
+
+CXX         := g++
+CXXFLAGS    := -std=c++17 -O2 -Wall -I$(INC_DIR)
+LDFLAGS     := -ldrogon -lws2_32 -lstdc++
+
+SRCS        := $(wildcard $(SRC_DIR)/*.cc)
+OBJS        := $(patsubst $(SRC_DIR)/%.cc,$(BUILD_DIR)/%.o,$(SRCS))
+LIB_DLL     := $(BUILD_DIR)/$(LIBNAME).dll
+MAIN        := main.cc
+
+all: $(TARGET)
+
+$(LIB_DLL): $(OBJS)
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) -shared -o $@ $^ -Wl,--out-implib,$(BUILD_DIR)/lib$(LIBNAME).a
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -DBUILD_DLL -c $< -o $@
+
+$(TARGET): $(MAIN) $(LIB_DLL)
+	$(CXX) $(CXXFLAGS) -o $@ $(MAIN) -L$(BUILD_DIR) -l$(LIBNAME) $(LDFLAGS)
+
+clean:
+	rm -rf $(BUILD_DIR) $(TARGET)

@@ -1,0 +1,44 @@
+TARGET      := app
+LIBNAME     := drogon_controllers
+SRC_DIR     := controllers
+INC_DIR     := include
+BUILD_DIR   := build
+
+CXX         := g++
+CXXFLAGS    := -std=c++17 -O2 -Wall -I$(INC_DIR)
+
+# Drogon and pthread
+LDFLAGS     := -L/usr/local/lib -ldrogon -lpthread
+
+# --- Auto-detect jsoncpp include path ---
+JSONCPP_INC := $(shell pkg-config --cflags jsoncpp 2>/dev/null)
+CXXFLAGS    += $(JSONCPP_INC)
+
+# --- Auto-detect jsoncons include path ---
+JSONCONS_INC := $(shell find /usr /usr/local -type d -name "jsoncons_ext" 2>/dev/null | head -n 1 | xargs dirname)
+ifeq ($(JSONCONS_INC),)
+  $(warning ⚠️ Could not find jsoncons_ext, you may need to install jsoncons)
+else
+  CXXFLAGS += -I$(JSONCONS_INC)
+endif
+
+SRCS        := $(wildcard $(SRC_DIR)/*.cc)
+OBJS        := $(patsubst $(SRC_DIR)/%.cc,$(BUILD_DIR)/%.o,$(SRCS))
+LIB_SO      := $(BUILD_DIR)/lib$(LIBNAME).so
+MAIN        := main.cc
+
+all: $(TARGET)
+
+$(LIB_SO): $(OBJS)
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) -shared -o $@ $^
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cc
+	@mkdir -p $(BUILD_DIR)
+	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+
+$(TARGET): $(MAIN) $(LIB_SO)
+	$(CXX) $(CXXFLAGS) -o $@ $(MAIN) -L$(BUILD_DIR) -l$(LIBNAME) $(LDFLAGS)
+
+clean:
+	rm -rf $(BUILD_DIR) $(TARGET)
